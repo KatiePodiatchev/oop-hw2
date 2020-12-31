@@ -1,0 +1,47 @@
+# Should add edges to the graph
+
+# Create a graph
+CreateGraph graph1
+
+# Create some nodes and add them to the graph
+CreateNode n1 5
+CreateNode n2 5
+CreateNode n3 10
+AddNode graph1 n1
+AddNode graph1 n2
+AddNode graph1 n3
+
+# Add Edges from nodes to other nodes
+AddEdge graph1 n1 n2
+AddEdge graph1 n2 n3
+AddEdge graph1 n3 n5
+
+ListNodes graph1
+ListChildren graph1 n1
+ListChildren graph1 n2
+ListChildren graph1 n3
+
+# Add Edge from node to itself
+AddEdge graph1 n1 n1
+ListNodes graph1
+ListChildren graph1 n1
+ListChildren graph1 n2
+ListChildren graph1 n3
+
+# Add Edge twice
+AddEdge graph1 n2 n3
+ListNodes graph1
+ListChildren graph1 n1
+ListChildren graph1 n2
+ListChildren graph1 n3
+
+# Add Edge to the other direction 
+AddEdge graph1 n3 n2
+ListNodes graph1
+ListChildren graph1 n1
+ListChildren graph1 n2
+ListChildren graph1 n3
+
+# Find a path
+FindPath graph1 n1 -> n1
+

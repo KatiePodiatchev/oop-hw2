@@ -14,10 +14,11 @@ import java.util.*;
 public class TestDriver {
 
 	// String -> Graph: maps the names of graphs to the actual graph
-	// TODO: Parameterize the next line correctly.
-  	private final Map<String,          > graphs = new HashMap<>();
+  	private final Map<String, Graph<WeightedNode>> graphs = new HashMap<>();
+  	
   	// String -> WeightedNode: maps the names of nodes to the actual node
-  	private final Map<String,WeightedNode> nodes = new HashMap<>();
+  	
+  	private final Map<String, WeightedNode> nodes = new HashMap<>();
 	private final BufferedReader input;
   	private final PrintWriter output;
 
@@ -108,12 +109,8 @@ public class TestDriver {
 
 
   	private void createGraph(String graphName) {
-  		
-  		//TODO: Insert your code here.
-  		
-  		// graphs.put(graphName, ___);
-  		// output.println(...);
-
+  		 graphs.put(graphName, new Graph<WeightedNode>());
+  		 output.println("created graph " + graphName);
   	}
  
   	
@@ -130,12 +127,12 @@ public class TestDriver {
 
 
  	private void createNode(String nodeName, String cost) {
-
- 		// TODO: Insert your code here.
- 		
- 		// nodes.put(nodeName, ___);
- 		// output.println(...);
- 		
+ 		 try {
+ 			 nodes.put(nodeName, new WeightedNode(nodeName, Integer.parseInt(cost)));
+ 			 output.println("created node " + nodeName + " with cost " + cost);
+ 		 } catch (NumberFormatException e) {
+ 			 output.println("CreateNode NumberFormatException: " + cost);
+ 		 }
   	}
 	
 
@@ -152,13 +149,10 @@ public class TestDriver {
 
 
   	private void addNode(String graphName, String nodeName) {
-
-  		// TODO: Insert your code here.
-  		 
-  		// ___ = graphs.get(graphName);
-  		// ___ = nodes.get(nodeName);
-  		// output.println(...);
-  		
+  		 Graph<WeightedNode> graph = graphs.get(graphName);
+  		 WeightedNode node = nodes.get(nodeName);
+  		 graph.addNode(node);
+  		 output.println("added node " + nodeName + " to " + graphName);
   	}
 
 
@@ -176,14 +170,11 @@ public class TestDriver {
 
 
 	private void addEdge(String graphName, String parentName, String childName) {
-		
-		// TODO: Insert your code here.
-		  
-		// ___ = graphs.get(graphName);
-		// ___ = nodes.get(parentName);
-		// ___ = nodes.get(childName);
-		// output.println(...);
-
+		Graph<WeightedNode> graph = graphs.get(graphName);
+		WeightedNode parent = nodes.get(parentName);
+		WeightedNode child = nodes.get(childName);
+		graph.addEdge(parent, child);
+		output.println("added edge from " + parentName + " to " + childName + " in " + graphName);
   	}
 
 
@@ -199,12 +190,17 @@ public class TestDriver {
 
 
   	private void listNodes(String graphName) {
-  		
-  		// TODO: Insert your code here.
-  		   
-  		// ___ = graphs.get(graphName);
-  		// output.println(...);
-
+  		 Graph<WeightedNode> graph = graphs.get(graphName);
+  		 Set<WeightedNode> allNodes = graph.getNodes();
+  		 List<String> nodeNames = new ArrayList<String>();
+  		 for (WeightedNode node : allNodes) {
+  			 nodeNames.add(node.getName());
+  		 }
+  		 // A contains: n1 n2 n3
+  		 Collections.sort(nodeNames);
+  		 output.println(graphName + " contains:"
+  				 + (nodeNames.size() > 0 ? " " : "") 
+  				 + String.join(" ", nodeNames));
   	}
 
 
@@ -221,13 +217,17 @@ public class TestDriver {
 
 
   	private void listChildren(String graphName, String parentName) {
-
-  		// TODO: Insert your code here.
-  		    
-  		// ___ = graphs.get(graphName);
-  		// ___ = nodes.get(parentName);
-  		// output.println(...);
-  		
+ 		 Graph<WeightedNode> graph = graphs.get(graphName);
+ 		 WeightedNode parent = nodes.get(parentName);
+ 		 Set<WeightedNode> childNodes = graph.getChildren(parent);
+ 		 List<String> nodeNames = new ArrayList<String>();
+ 		 for (WeightedNode node : childNodes) {
+ 			 nodeNames.add(node.getName());
+ 		 }
+ 		 Collections.sort(nodeNames);
+ 		 output.println("the children of " + parentName + " in " + graphName + " are:"
+  				 + (nodeNames.size() > 0 ? " " : "") 
+  				 + String.join(" ", nodeNames));
   	}
 
 
@@ -269,15 +269,35 @@ public class TestDriver {
 
 
   	private void findPath(String graphName, List<String> sourceArgs,
-  						  List<String> destArgs) {
+  						  List<String> destArgs) {   
+  		Graph<WeightedNode> graph = graphs.get(graphName);
   		
-  		// TODO: Insert your code here.
-  		   
-  		// ___ = graphs.get(graphName);
-  		// ___ = nodes.get(sourceArgs.get(i));
-  		// ___ = nodes.get(destArgs.get(i));
-  		// output.println(...);
-		
+  		List<WeightedNodePath> startPaths = new ArrayList<>();
+  		for (String sourceArg : sourceArgs) {
+  			WeightedNodePath path = new WeightedNodePath(nodes.get(sourceArg));
+  			startPaths.add(path);
+  		}
+  		
+  		List<WeightedNode> endNodes = new ArrayList<WeightedNode>();
+  		for (String destArg : destArgs) {
+  			endNodes.add(nodes.get(destArg));
+  		}
+
+  		WeightedNodePath shortestPath = 
+  				PathFinder.nodeWeightedShortestPath(graph, startPaths, endNodes);
+  		if (shortestPath == null) {
+  			output.println("There is no path in " + graphName);
+  			return;
+  		}
+	    List<String> nodeNames = new ArrayList<String>();
+	    
+	    Iterator<WeightedNode> pathIterator = shortestPath.iterator();
+	    while (pathIterator.hasNext()) {
+		    nodeNames.add(pathIterator.next().getName()); 
+	    }
+  		output.println("shortest path in " + graphName + ":"
+  				 + (nodeNames.size() > 0 ? " " : "") 
+  				 + String.join(" ", nodeNames));
   	}
 
 

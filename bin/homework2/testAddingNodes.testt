@@ -1,0 +1,30 @@
+# Should add nodes to the graph
+
+# Create a graph
+CreateGraph graph1
+
+# Add first node and add it to the graph
+CreateNode n1 5
+AddNode graph1 n1
+ListNodes graph1
+ListChildren graph1 n1
+
+# Try to add same node again
+AddNode graph1 n1
+ListNodes graph1
+ListChildren graph1 n1
+
+# Add an edge
+AddEdge graph1 n1 n1
+ListNodes graph1
+ListChildren graph1 n1
+
+# Add a second node
+AddNode graph1 n2
+ListNodes graph1
+ListChildren graph1 n1
+ListChildren graph1 n2
+
+# Find a path
+FindPath graph1 n1 -> n1
+
